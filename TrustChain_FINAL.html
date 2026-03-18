@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustChain — Fraud Intelligence Platform</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07101F;--bg1:#0C1828;--bg2:#111F33;--bg3:#16273E;--bg4:#1C3050;--b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);--c:#00D9FF;--cg:rgba(0,217,255,.12);--r:#FF2D55;--rg:rgba(255,45,85,.12);--g:#00E5A0;--gg:rgba(0,229,160,.12);--a:#FFB300;--ag:rgba(255,179,0,.12);--p:#A855F7;--pg:rgba(168,85,247,.12);--t:#EDF2FF;--t2:#8BA3C7;--t3:#3D5470;--sans:"Space Grotesk",sans-serif;--mono:"Fira Code",monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body,#root{height:100%;font-family:var(--sans);background:var(--bg);color:var(--t);overflow:hidden}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulseg{0%,100%{box-shadow:0 0 0 0 rgba(0,229,160,.5)}70%{box-shadow:0 0 0 6px rgba(0,229,160,0)}}
+@keyframes slideR{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes scanA{0%{top:10%;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:90%;opacity:0}}
+@keyframes shimA{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.app{display:flex;flex-direction:column;height:100vh}
+.bar{height:54px;background:rgba(7,16,31,.96);border-bottom:1px solid var(--b);display:flex;align-items:center;padding:0 18px;flex-shrink:0;z-index:100;backdrop-filter:blur(16px)}
+.logo{display:flex;align-items:center;gap:10px;margin-right:28px}
+.logo-m{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#006688,#00D9FF);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#000;box-shadow:0 0 14px rgba(0,217,255,.3)}
+.logo-n{font-size:16px;font-weight:800;letter-spacing:-.4px}
+.logo-n span{color:var(--c)}
+.tabs{display:flex;gap:2px}
+.tab{padding:7px 13px;border-radius:7px;border:none;background:none;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;position:relative}
+.tab:hover{background:rgba(255,255,255,.05);color:var(--t)}
+.tab.on{background:var(--cg);color:var(--c)}
+.tab.on::after{content:"";position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:18px;height:2px;background:var(--c);border-radius:2px}
+.tabn{font-size:9px;font-family:var(--mono);background:var(--r);color:#fff;padding:1px 5px;border-radius:8px;font-weight:700}
+.bar-r{display:flex;align-items:center;gap:14px;margin-left:auto}
+.livew{display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--mono);color:var(--t2)}
+.lived{width:7px;height:7px;border-radius:50%;background:var(--g);animation:pulseg 2s infinite}
+.clk{font-family:var(--mono);font-size:12px;color:var(--t3)}
+.uav{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--c);cursor:pointer}
+.bdy{flex:1;overflow:hidden;position:relative}
+.pg{position:absolute;inset:0;display:none;overflow:hidden}
+.pg.on{display:flex;animation:fadeIn .2s ease}
+.sb{width:206px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--b);padding:12px 8px;display:flex;flex-direction:column;gap:1px;overflow-y:auto}
+.sg{font-size:9px;font-family:var(--mono);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);padding:10px 10px 5px}
+.si{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;font-size:12.5px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left;font-family:var(--sans)}
+.si:hover{background:rgba(255,255,255,.04);color:var(--t)}
+.si.on{background:var(--cg);color:var(--c);border:1px solid rgba(0,217,255,.12)}
+.sic{font-size:13px;width:18px;text-align:center;flex-shrink:0}
+.sib{margin-left:auto;font-size:9px;font-family:var(--mono);padding:2px 6px;border-radius:8px;font-weight:700}
+.scrl{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px}
+.card{background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:14px;overflow:hidden;transition:border-color .2s}
+.card:hover{border-color:var(--b2)}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:13px 17px;border-bottom:1px solid var(--b)}
+.ct{font-size:13px;font-weight:700}
+.cs{font-size:11px;color:var(--t3);margin-top:2px}
+.cb{padding:14px 17px}
+.bdg{display:inline-flex;align-items:center;font-size:9.5px;font-family:var(--mono);font-weight:700;padding:3px 7px;border-radius:5px;letter-spacing:.3px}
+.br{background:var(--rg);color:var(--r);border:1px solid rgba(255,45,85,.18)}
+.bg{background:var(--gg);color:var(--g);border:1px solid rgba(0,229,160,.18)}
+.ba{background:var(--ag);color:var(--a);border:1px solid rgba(255,179,0,.18)}
+.bc{background:var(--cg);color:var(--c);border:1px solid rgba(0,217,255,.14)}
+.bp{background:var(--pg);color:var(--p);border:1px solid rgba(168,85,247,.18)}
+.bx{background:rgba(255,255,255,.05);color:var(--t2);border:1px solid var(--b)}
+.btn{padding:9px 17px;border-radius:9px;border:none;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:7px}
+.btn:active{transform:scale(.97)}
+.btn-c{background:var(--c);color:#000}
+.btn-c:hover{background:#33E5FF;box-shadow:0 0 20px rgba(0,217,255,.35)}
+.btn-r{background:var(--r);color:#fff}
+.btn-r:hover{background:#FF4466}
+.btn-gh{background:rgba(255,255,255,.04);border:1px solid var(--b2);color:var(--t2)}
+.btn-gh:hover{background:rgba(255,255,255,.08);color:var(--t)}
+.btn-sm{padding:5px 11px;font-size:11.5px;border-radius:7px}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.inp{background:var(--bg2);border:1.5px solid var(--b2);border-radius:9px;padding:10px 13px;font-family:var(--mono);font-size:13px;color:var(--t);outline:none;transition:all .15s;width:100%}
+.inp:focus{border-color:var(--c);background:var(--bg3);box-shadow:0 0 0 3px var(--cg)}
+.kpi{background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:14px;padding:17px;position:relative;overflow:hidden;transition:all .25s;cursor:default}
+.kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--kc,var(--c)),transparent)}
+.kpi:hover{border-color:var(--b2);transform:translateY(-2px)}
+.kpil{font-size:10px;font-family:var(--mono);font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);margin-bottom:9px}
+.kpiv{font-size:30px;font-weight:700;letter-spacing:-1.5px;line-height:1}
+.kpid{font-size:11px;color:var(--t3);margin-top:7px}
+.kpiic{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:34px;opacity:.05}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:9px;font-family:var(--mono);font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--t3);padding:9px 11px;text-align:left;border-bottom:1px solid var(--b);background:rgba(0,0,0,.3);position:sticky;top:0;z-index:2}
+.tbl td{padding:11px 11px;font-size:12.5px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+.tbl tbody tr{transition:background .1s;cursor:pointer}
+.tbl tbody tr:hover td{background:rgba(0,217,255,.03)}
+.tbl tbody tr:last-child td{border-bottom:none}
+.av{width:31px;height:31px;border-radius:8px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.uc{display:flex;align-items:center;gap:9px}
+.mb{display:flex;align-items:center;gap:7px;min-width:110px}
+.mbt{flex:1;height:3px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.mbf{height:100%;border-radius:2px;transition:width .5s}
+.mbv{font-size:11px;font-family:var(--mono);font-weight:600;min-width:20px}
+.fi{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.fi:last-child{border-bottom:none}
+.fd{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ft{font-size:12px;line-height:1.5}
+.fts{font-size:9px;color:var(--t3);font-family:var(--mono);margin-top:2px}
+.troot{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column-reverse;gap:8px}
+.toast{background:var(--bg2);border:1px solid var(--b2);border-radius:12px;padding:13px 15px;min-width:270px;max-width:330px;display:flex;align-items:flex-start;gap:11px;box-shadow:0 8px 30px rgba(0,0,0,.5);animation:slideR .3s ease}
+.tic{font-size:17px;flex-shrink:0;line-height:1.3}
+.ttit{font-size:12px;font-weight:700;margin-bottom:2px}
+.tbdy{font-size:11px;color:var(--t2);line-height:1.4;font-family:var(--mono)}
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:800;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s}
+.mbox{background:var(--bg2);border:1px solid var(--b2);border-radius:18px;padding:26px;width:500px;max-width:94vw;max-height:88vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,.6);animation:fadeUp .22s ease}
+.mh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.mtt{font-size:17px;font-weight:700;letter-spacing:-.4px}
+.mx{width:28px;height:28px;border-radius:7px;border:1px solid var(--b2);background:rgba(255,255,255,.04);color:var(--t2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.mx:hover{background:var(--rg);border-color:var(--r);color:var(--r)}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.g32{display:grid;grid-template-columns:2fr 1fr;gap:13px}
+.scrd{background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:12px;padding:13px;transition:all .2s}
+.scrd.dd{border-color:rgba(255,45,85,.3);background:rgba(255,45,85,.04)}
+.scrd.ss{border-color:rgba(0,229,160,.3);background:rgba(0,229,160,.04)}
+.scrd:hover{transform:translateY(-2px)}
+.sl{font-size:9px;font-family:var(--mono);font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
+.sv{font-size:13px;font-weight:600;margin-bottom:5px;word-break:break-all}
+.ss2{font-size:10px;font-family:var(--mono)}
+.igw{background:var(--bg1);border-radius:11px;overflow:hidden}
+.pp{width:310px;flex-shrink:0;background:var(--bg1);border-left:1px solid var(--b);display:flex;flex-direction:column;overflow:hidden}
+.pph{padding:22px 18px;border-bottom:1px solid var(--b);background:linear-gradient(160deg,var(--bg2),var(--bg1))}
+.pav{width:52px;height:52px;border-radius:13px;font-size:19px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:13px}
+.pn{font-size:17px;font-weight:700;letter-spacing:-.4px}
+.pid{font-size:10px;font-family:var(--mono);color:var(--t3);margin-top:3px}
+.psc{font-size:48px;font-weight:700;letter-spacing:-3px;line-height:1;margin-top:11px}
+.prw{display:flex;align-items:center;justify-content:space-between;padding:9px 17px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
+.pk{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px}
+.pv{font-family:var(--mono);font-size:11px;text-align:right;max-width:155px;word-break:break-all}
+.li{display:flex;align-items:center;gap:10px;padding:10px 13px;background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:11px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.li:hover{border-color:var(--c);background:var(--cg)}
+.agw{display:flex;align-items:center;justify-content:center;gap:26px;width:100%;height:100%;overflow-y:auto;padding:18px}
+.phout{width:300px;flex-shrink:0;background:#090909;border-radius:48px;padding:8px;box-shadow:0 50px 110px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.08)}
+.phin{background:#0A0F1A;border-radius:42px;overflow:hidden;position:relative;display:flex;flex-direction:column;height:624px}
+.phisl{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:78px;height:23px;background:#000;border-radius:18px;z-index:10}
+.phtop{background:#0A0F1A;padding:10px 22px 5px;display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.45);font-family:var(--mono);flex-shrink:0;margin-top:8px}
+.phsc{flex:1;overflow-y:auto;padding:0 11px 14px}
+.phsc::-webkit-scrollbar{width:0}
+.ah{text-align:center;padding:6px 0 2px}
+.as2{font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.28);letter-spacing:2px}
+.ao{font-size:17px;font-weight:800;color:#fff;margin:2px 0}
+.ai{font-size:11px;color:rgba(255,255,255,.38)}
+.ro{display:flex;flex-direction:column;align-items:center;padding:10px 0 5px}
+.rw{position:relative;width:96px;height:96px}
+.rw canvas{position:absolute;inset:0;width:100%;height:100%}
+.rc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.rn{font-size:22px;font-weight:800;color:#fff;line-height:1}
+.rl{font-size:8px;font-family:var(--mono);color:rgba(255,255,255,.3);letter-spacing:.4px}
+.rt{font-size:11px;font-weight:700;letter-spacing:.3px;margin-top:7px}
+.rf{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:6px}
+.rfl{font-size:8px;font-family:var(--mono);font-weight:700;padding:2px 6px;border-radius:4px}
+.sb3{background:#0F1520;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:13px;overflow:hidden;position:relative;min-height:82px;text-align:center;margin-bottom:8px}
+.sbl{position:absolute;left:8px;right:8px;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent);box-shadow:0 0 8px var(--c);animation:scanA 2s ease-in-out infinite}
+.sbic{font-size:32px;margin:3px 0;position:relative;z-index:1}
+.sbh{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.22);margin-top:3px}
+.sbs{font-size:9px;font-family:var(--mono);letter-spacing:.4px;margin-top:5px}
+.cli{display:flex;align-items:center;gap:9px;padding:10px 11px;border:1px solid rgba(255,255,255,.07);background:#0F1520;border-radius:10px;margin-bottom:7px;cursor:pointer;transition:all .18s}
+.cli:active{transform:scale(.98)}
+.cli.done{background:rgba(0,229,160,.06);border-color:rgba(0,229,160,.22)}
+.cli.fail{background:rgba(255,45,85,.06);border-color:rgba(255,45,85,.22)}
+.cli:hover:not(.done):not(.fail){background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.12)}
+.clb{width:21px;height:21px;border-radius:6px;border:1.5px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .18s}
+.cli.done .clb{background:var(--g);border-color:var(--g);color:#000}
+.cli.fail .clb{background:var(--r);border-color:var(--r);color:#fff}
+.clname{font-size:11.5px;font-weight:600;color:#fff}
+.clsub{font-size:9px;font-family:var(--mono);color:rgba(255,255,255,.28);margin-top:1px}
+.clst{font-size:9px;font-family:var(--mono);font-weight:700}
+.wtw{background:#0F1520;border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:11px;margin-bottom:8px}
+.wtr{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.wtb{flex:1;text-align:center;padding:8px;background:rgba(0,0,0,.38);border-radius:8px}
+.wtbl{font-size:8px;font-family:var(--mono);color:rgba(255,255,255,.28);margin-bottom:3px}
+.wtn{font-size:21px;font-weight:800}
+.wts{font-size:18px;color:rgba(255,80,80,.6)}
+.wtdb{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-bottom:5px}
+.wtdf{height:100%;background:var(--r);border-radius:2px;transition:width 1s ease}
+.wtm{font-size:9px;font-family:var(--mono);color:rgba(255,45,85,.85)}
+.verd{padding:11px 13px;border-radius:11px;margin-bottom:8px}
+.sbtn{width:100%;padding:13px;border-radius:12px;border:none;font-family:var(--sans);font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:-.2px}
+.sbtn.rdy{background:var(--r);color:#fff;box-shadow:0 0 28px rgba(255,45,85,.35)}
+.sbtn.rdy:hover{box-shadow:0 0 45px rgba(255,45,85,.55);transform:translateY(-2px)}
+.sbtn.dn{background:rgba(0,229,160,.1);color:var(--g);border:1px solid rgba(0,229,160,.2)}
+.sbtn:disabled{opacity:.28;cursor:not-allowed;transform:none}
+.ainf{width:330px;flex-shrink:0;display:flex;flex-direction:column;gap:11px;overflow-y:auto;max-height:660px}
+.lbar{display:flex;align-items:center;gap:10px;padding:13px 18px;background:var(--bg1);border-bottom:1px solid var(--b);flex-shrink:0}
+.lmain{flex:1;overflow-y:auto;padding:15px 18px;display:flex;flex-direction:column;gap:13px}
+.sel{background:var(--bg2);border:1px solid var(--b2);border-radius:8px;padding:7px 9px;color:var(--t2);font-family:var(--mono);font-size:12px;outline:none;cursor:pointer}
+.sel:focus{border-color:var(--c)}
+.geo{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+.gec{aspect-ratio:1;border-radius:3px;cursor:pointer;transition:all .1s}
+.gec:hover{transform:scale(1.15);position:relative;z-index:1}
+.skel{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimA 1.5s infinite;border-radius:5px}
+.spn{width:15px;height:15px;border:2px solid var(--b2);border-top-color:var(--c);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+.tl{display:flex;gap:9px;padding:7px 0}
+.tld{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.tlt{font-size:11.5px;line-height:1.5}
+.tls{font-size:9px;color:var(--t3);font-family:var(--mono);margin-top:2px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+"use strict";
+const e = React.createElement;
+const { useState, useEffect, useRef, Fragment } = React;
+
+// ============================================================
+//  DATABASE
+// ============================================================
+const DB = {
+  users: [
+    {id:"USR001",name:"Rohit Mehra",init:"RM",phone:"+91 98765 43210",email:"rohit.m@gmail.com",ip:"103.22.145.88",uuid:"d4f2a8c1-9b3e-4f77",imei:"354921082847620",upi:"rohit.m@ybl",bank:"HDFC xxxx4821",addr:"Flat 4B DDA Flats Dwarka",city:"Delhi",pin:"110044",score:22,linked:4,incidents:14,weightMismatches:8,returnRate:78,codBlocked:true,risk:"CRITICAL",rc:"#FF2D55",platforms:["Amazon","Flipkart","Meesho"],fraudType:"Weight Fraud + Identity Laundering",flags:["IP_SHARED_4_ACCS","IMEI_BLACKLISTED","UPI_FLAGGED"],timeline:[{t:"2d ago",e:"Linked account USR006 detected - same IMEI+bank",c:"r"},{t:"4d ago",e:"Weight delta +67g flagged on return IN#7801",c:"r"},{t:"8d ago",e:"IP 103.22.145.88 shared with 3 other accounts",c:"r"}]},
+    {id:"USR002",name:"Vijay Kumar",init:"VK",phone:"+91 87654 32109",email:"vijay.k@yahoo.com",ip:"103.22.145.91",uuid:"d4f2a8c1-9b3e-4f77",imei:"354921082847620",upi:"vijay.k@paytm",bank:"HDFC xxxx4821",addr:"H-22 DDA Flats Dwarka",city:"Delhi",pin:"110044",score:29,linked:4,incidents:9,weightMismatches:5,returnRate:61,codBlocked:true,risk:"HIGH",rc:"#FF2D55",platforms:["Amazon","Myntra"],fraudType:"Counterfeit Swap",flags:["SAME_IMEI_USR001","SAME_BANK"],timeline:[{t:"1d ago",e:"Counterfeit iPhone returned - IMEI mismatch",c:"r"},{t:"5d ago",e:"Same IMEI as USR001 ring",c:"r"}]},
+    {id:"USR003",name:"Priya Krishnan",init:"PK",phone:"+91 77654 32108",email:"priya.k@gmail.com",ip:"49.32.201.10",uuid:"b3c1f2a8-1234-5678",imei:"490154203237518",upi:"priya.k@gpay",bank:"ICICI xxxx7234",addr:"14 Jayanagar Bangalore",city:"Bangalore",pin:"560011",score:88,linked:1,incidents:0,weightMismatches:0,returnRate:12,codBlocked:false,risk:"LOW",rc:"#00E5A0",platforms:["Flipkart","Amazon"],fraudType:"None",flags:[],timeline:[{t:"3d ago",e:"Clean return - auto approved",c:"g"}]},
+    {id:"USR004",name:"Amit Sharma",init:"AS",phone:"+91 99887 76655",email:"amit.s@outlook.com",ip:"122.160.88.42",uuid:"e7d9c3b1-abcd-ef12",imei:"353621090765432",upi:"amit.s@ybl",bank:"SBI xxxx9012",addr:"Sector 62 Noida",city:"Noida",pin:"201305",score:52,linked:2,incidents:3,weightMismatches:2,returnRate:44,codBlocked:false,risk:"MEDIUM",rc:"#FFB300",platforms:["Amazon","Flipkart"],fraudType:"Weight Manipulation",flags:["WEIGHT_MISMATCH_PATTERN"],timeline:[{t:"7d ago",e:"Weight +28g - borderline threshold",c:"a"},{t:"15d ago",e:"3 returns in 7 days - pattern flagged",c:"a"}]},
+    {id:"USR005",name:"Neha Verma",init:"NV",phone:"+91 88776 65544",email:"neha.v@gmail.com",ip:"103.21.200.5",uuid:"f1a2b3c4-5678-90ab",imei:"356938035643809",upi:"neha.v@googlepay",bank:"Axis xxxx3301",addr:"Andheri Mumbai",city:"Mumbai",pin:"400053",score:79,linked:1,incidents:0,weightMismatches:0,returnRate:18,codBlocked:false,risk:"LOW",rc:"#00E5A0",platforms:["Myntra","Amazon"],fraudType:"None",flags:[],timeline:[{t:"10d ago",e:"Clean return processed",c:"g"}]},
+    {id:"USR006",name:"Suresh Pillai",init:"SP",phone:"+91 96543 21098",email:"suresh.p@gmail.com",ip:"103.22.145.90",uuid:"d4f2a8c1-9b3e-4f77",imei:"354921082847620",upi:"suresh.p@ybl",bank:"HDFC xxxx4821",addr:"Flat 5C DDA Flats Dwarka",city:"Delhi",pin:"110044",score:18,linked:4,incidents:11,weightMismatches:7,returnRate:82,codBlocked:true,risk:"CRITICAL",rc:"#FF2D55",platforms:["Flipkart","Meesho"],fraudType:"Identity Laundering",flags:["SAME_IMEI_RING","SAME_BANK","ADDRESS_CLUSTER"],timeline:[{t:"1d ago",e:"3rd account using IMEI 354921082847620",c:"r"},{t:"3d ago",e:"UPI hash linked to blacklist",c:"r"}]},
+  ],
+  queue:[
+    {uid:"USR001",item:"Samsung Galaxy S23 Ultra",platform:"Amazon",orderId:"IN#7834",value:"Rs.1,24,999"},
+    {uid:"USR003",item:"Banarasi Silk Saree",platform:"Flipkart",orderId:"IN#7835",value:"Rs.8,499"},
+    {uid:"USR004",item:"Dell XPS 15 Laptop",platform:"Amazon",orderId:"IN#7836",value:"Rs.1,89,990"},
+    {uid:"USR005",item:"Anarkali Embroidered Set",platform:"Myntra",orderId:"IN#7837",value:"Rs.4,299"},
+    {uid:"USR002",item:"iPhone 15 Pro Max",platform:"Amazon",orderId:"IN#7838",value:"Rs.1,59,900"},
+    {uid:"USR006",item:"Sony WH-1000XM5",platform:"Meesho",orderId:"IN#7839",value:"Rs.26,990"},
+  ],
+  ledger:[
+    {hash:"a3f9c2e8...d441",type:"Weight Fraud",platforms:["Amazon","Flipkart"],linked:4,incidents:14,score:12,status:"BLACKLIST",blocked:384000,cod:"BLOCKED"},
+    {hash:"b7d3e1f4...8c22",type:"Counterfeit Swap",platforms:["Meesho","Flipkart"],linked:2,incidents:9,score:29,status:"RESTRICTED",blocked:221000,cod:"BLOCKED"},
+    {hash:"c1a8d5b3...f90e",type:"Identity Launder",platforms:["Amazon"],linked:3,incidents:6,score:34,status:"BLACKLIST",blocked:148000,cod:"BLOCKED"},
+    {hash:"e9f2c4a1...3b17",type:"Weight Fraud",platforms:["Amazon","Myntra"],linked:2,incidents:11,score:8,status:"BLACKLIST",blocked:512000,cod:"BLOCKED"},
+    {hash:"f4b7e8d2...a045",type:"Account Farm",platforms:["Flipkart","Meesho"],linked:6,incidents:7,score:41,status:"RESTRICTED",blocked:93000,cod:"WATCH"},
+    {hash:"a1b2c3d4...e567",type:"Identity Launder",platforms:["Amazon"],linked:1,incidents:4,score:55,status:"REVIEW",blocked:48000,cod:"WATCH"},
+    {hash:"d8e9f0a1...b234",type:"Counterfeit Swap",platforms:["Myntra","Amazon"],linked:3,incidents:8,score:19,status:"BLACKLIST",blocked:296000,cod:"BLOCKED"},
+    {hash:"c3d4e5f6...g789",type:"Weight Fraud",platforms:["Flipkart"],linked:1,incidents:5,score:47,status:"RESTRICTED",blocked:72000,cod:"WATCH"},
+  ],
+  lookup(q){const lq=q.toLowerCase().trim();return this.users.find(u=>u.phone.includes(lq)||u.ip.includes(lq)||u.uuid.toLowerCase().includes(lq)||u.imei.includes(lq)||u.upi.toLowerCase().includes(lq)||u.name.toLowerCase().includes(lq)||u.addr.toLowerCase().includes(lq)||u.id.toLowerCase().includes(lq)||u.bank.toLowerCase().includes(lq)||u.email.toLowerCase().includes(lq))||null;},
+  getLinked(user){return this.users.filter(u=>u.id!==user.id&&(u.uuid===user.uuid||u.imei===user.imei||u.bank===user.bank||u.upi===user.upi||u.ip.split(".").slice(0,3).join(".")===user.ip.split(".").slice(0,3).join(".")));}
+};
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
+const fmt = n => Number(n).toLocaleString("en-IN");
+const sc = s => s >= 70 ? "#00E5A0" : s >= 40 ? "#FFB300" : "#FF2D55";
+const sb = s => s >= 70 ? "bg" : s >= 40 ? "ba" : "br";
+const div = (cls, props, ...children) => e("div", Object.assign({className: cls}, props), ...children);
+
+// ============================================================
+//  TOAST
+// ============================================================
+let _setToasts = null;
+function Toasts() {
+  const [ts, set] = useState([]);
+  _setToasts = set;
+  return div("troot", null, ...ts.map(t =>
+    div("toast", {key: t.id, style: {borderLeft: "3px solid " + t.col}},
+      div("tic", null, t.icon),
+      e("div", null,
+        div("ttit", {style: {color: t.col}}, t.title),
+        div("tbdy", null, t.msg)
+      )
+    )
+  ));
+}
+function toast(type, title, msg) {
+  if (!_setToasts) return;
+  const m = {success:{col:"#00E5A0",icon:"✓"},danger:{col:"#FF2D55",icon:"⚠"},warn:{col:"#FFB300",icon:"!"},info:{col:"#00D9FF",icon:"ℹ"}};
+  const id = Date.now();
+  _setToasts(p => [{id, ...m[type], title, msg}, ...p].slice(0, 4));
+  setTimeout(() => _setToasts(p => p.filter(x => x.id !== id)), 4500);
+}
+
+// ============================================================
+//  MODAL
+// ============================================================
+let _setModal = null;
+function ModalRoot() {
+  const [m, set] = useState(null);
+  _setModal = set;
+  if (!m) return null;
+  return div("mbg", {onClick: ev => { if (ev.target === ev.currentTarget) set(null); }},
+    div("mbox", null,
+      div("mh", null,
+        div("mtt", null, m.title),
+        e("button", {className: "mx", onClick: () => set(null)}, "✕")
+      ),
+      m.body
+    )
+  );
+}
+const openModal = (t, b) => _setModal && _setModal({title: t, body: b});
+const closeModal = () => _setModal && _setModal(null);
+
+// ============================================================
+//  CLOCK
+// ============================================================
+function Clock() {
+  const [t, setT] = useState("");
+  useEffect(() => {
+    const tick = () => setT(new Date().toLocaleTimeString("en-GB"));
+    tick();
+    const iv = setInterval(tick, 1000);
+    return () => clearInterval(iv);
+  }, []);
+  return e("span", {className: "clk"}, t);
+}
+
+// ============================================================
+//  RING (Canvas animated score)
+// ============================================================
+function Ring({score, size}) {
+  size = size || 96;
+  const ref = useRef();
+  const anim = useRef(0);
+  const col = score >= 70 ? "#00E5A0" : score >= 40 ? "#FFB300" : "#FF2D55";
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    c.width = size * 2; c.height = size * 2;
+    const ctx = c.getContext("2d");
+    ctx.scale(2, 2);
+    const cx = size / 2, cy = size / 2, r = size / 2 - 7;
+    let cur = 0;
+    cancelAnimationFrame(anim.current);
+    const draw = () => {
+      cur = Math.min(cur + 2, score);
+      ctx.clearRect(0, 0, size, size);
+      ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, 1.5 * Math.PI);
+      ctx.strokeStyle = "rgba(255,255,255,.06)"; ctx.lineWidth = 7; ctx.stroke();
+      if (cur > 0) {
+        const end = -Math.PI / 2 + (cur / 100) * 2 * Math.PI;
+        ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, end);
+        ctx.strokeStyle = col; ctx.lineWidth = 7; ctx.lineCap = "round"; ctx.stroke();
+        ctx.shadowColor = col; ctx.shadowBlur = 10;
+        ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, end);
+        ctx.strokeStyle = col + "44"; ctx.lineWidth = 11; ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+      if (cur < score) anim.current = requestAnimationFrame(draw);
+    };
+    anim.current = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(anim.current);
+  }, [score, size, col]);
+  return e("canvas", {ref, style: {position:"absolute",inset:0,width:"100%",height:"100%"}});
+}
+
+// ============================================================
+//  LIVE CHART (Canvas)
+// ============================================================
+function LiveChart() {
+  const ref = useRef();
+  const data = useRef(Array.from({length: 50}, () => Math.floor(5 + Math.random() * 25)));
+  useEffect(() => {
+    const draw = () => {
+      const c = ref.current;
+      if (!c) return;
+      const W = c.offsetWidth || 400, H = 88;
+      c.width = W * 2; c.height = H * 2;
+      const ctx = c.getContext("2d"); ctx.scale(2, 2); ctx.clearRect(0, 0, W, H);
+      const d = data.current, max = 80;
+      const gr = ctx.createLinearGradient(0, 0, 0, H);
+      gr.addColorStop(0, "rgba(255,45,85,.2)"); gr.addColorStop(1, "rgba(255,45,85,0)");
+      ctx.beginPath();
+      d.forEach((v, i) => { const x = (i / (d.length - 1)) * W, y = H - (v / max) * H; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+      ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath(); ctx.fillStyle = gr; ctx.fill();
+      ctx.beginPath();
+      d.forEach((v, i) => { const x = (i / (d.length - 1)) * W, y = H - (v / max) * H; i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+      ctx.strokeStyle = "#FF2D55"; ctx.lineWidth = 1.5; ctx.stroke();
+    };
+    draw();
+    const iv = setInterval(() => {
+      data.current.shift();
+      data.current.push(Math.floor(5 + Math.random() * 30 + (Math.random() > .9 ? Math.random() * 35 : 0)));
+      draw();
+    }, 800);
+    return () => clearInterval(iv);
+  }, []);
+  return e("canvas", {ref, style: {width:"100%",height:88,display:"block"}});
+}
+
+// ============================================================
+//  DONUT CHART (Canvas)
+// ============================================================
+function DonutChart() {
+  const ref = useRef();
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    const W = c.offsetWidth || 280, H = 120;
+    c.width = W * 2; c.height = H * 2;
+    const ctx = c.getContext("2d"); ctx.scale(2, 2);
+    const data = [{l:"Weight Fraud",v:38,c:"#FF2D55"},{l:"Counterfeit",v:24,c:"#FFB300"},{l:"ID Launder",v:18,c:"#A855F7"},{l:"Acct Farm",v:12,c:"#3B82F6"},{l:"Payment",v:8,c:"#00E5A0"}];
+    const total = data.reduce((a, d) => a + d.v, 0);
+    const cx = 52, cy = H / 2, r = 40, inner = 22;
+    let start = -Math.PI / 2;
+    data.forEach(d => { const a = (d.v / total) * 2 * Math.PI; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, start, start + a); ctx.closePath(); ctx.fillStyle = d.c; ctx.fill(); start += a; });
+    ctx.beginPath(); ctx.arc(cx, cy, inner, 0, 2 * Math.PI); ctx.fillStyle = "#111F33"; ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,.4)"; ctx.font = "700 8px Fira Code"; ctx.textAlign = "center";
+    ctx.fillText("FRAUD", cx, cy - 3); ctx.fillText("MIX", cx, cy + 7);
+    let ly = 14;
+    data.forEach(d => { ctx.fillStyle = d.c; ctx.fillRect(108, ly - 7, 9, 8); ctx.fillStyle = "rgba(255,255,255,.5)"; ctx.font = "400 9px Fira Code"; ctx.textAlign = "left"; ctx.fillText(d.l + " " + d.v + "%", 121, ly); ly += 18; });
+  }, []);
+  return e("canvas", {ref, style: {width:"100%",height:120,display:"block"}});
+}
+
+// ============================================================
+//  IDENTITY GRAPH (SVG)
+// ============================================================
+function IdGraph({center, linked}) {
+  const W = 500, H = 240, cx = W / 2, cy = H / 2;
+  const nodes = [{u:center,x:cx,y:cy,main:true}, ...linked.map((u, i) => {
+    const a = (i / linked.length) * 2 * Math.PI - Math.PI / 2;
+    return {u, x: cx + 92 * Math.cos(a), y: cy + 92 * Math.sin(a), main: false};
+  })];
+  const [hov, setHov] = useState(null);
+  return e("svg", {viewBox: "0 0 " + W + " " + H, style: {width:"100%",height:H}},
+    e("defs", null,
+      e("filter", {id: "gf"},
+        e("feGaussianBlur", {stdDeviation: "2", result: "b"}),
+        e("feMerge", null, e("feMergeNode", {in: "b"}), e("feMergeNode", {in: "SourceGraphic"}))
+      )
+    ),
+    ...linked.map((lu, i) => {
+      const n = nodes[i + 1];
+      const reasons = [];
+      if (lu.imei === center.imei) reasons.push("IMEI");
+      if (lu.bank === center.bank) reasons.push("Bank");
+      if (lu.upi === center.upi) reasons.push("UPI");
+      if (lu.ip.split(".").slice(0, 3).join(".") === center.ip.split(".").slice(0, 3).join(".")) reasons.push("IP");
+      return e(Fragment, {key: i},
+        e("line", {x1:cx,y1:cy,x2:n.x,y2:n.y,stroke:"rgba(255,45,85,.18)",strokeWidth:"1.5",strokeDasharray:"5,4"}),
+        e("text", {x:(cx+n.x)/2,y:(cy+n.y)/2-5,fontSize:"8",fill:"rgba(255,45,85,.6)",textAnchor:"middle",fontFamily:"Fira Code"}, reasons.join("+"))
+      );
+    }),
+    ...nodes.map((nd, i) => {
+      const col = nd.u.score < 40 ? "#FF2D55" : nd.u.score < 70 ? "#FFB300" : "#00E5A0";
+      const sz = nd.main ? 22 : 17;
+      return e("g", {key: i, style: {cursor:"pointer"}, onMouseEnter: () => setHov(i), onMouseLeave: () => setHov(null)},
+        e("circle", {cx:nd.x,cy:nd.y,r:sz+4,fill:col+"0A",stroke:col,strokeWidth:"0.5"}),
+        e("circle", {cx:nd.x,cy:nd.y,r:sz,fill:col+"22",stroke:col,strokeWidth:nd.main?"2":"1.5",filter:hov===i?"url(#gf)":undefined}),
+        e("text", {x:nd.x,y:nd.y+1,fontSize:nd.main?"10":"8.5",fill:col,textAnchor:"middle",dominantBaseline:"middle",fontWeight:"700",fontFamily:"Fira Code"}, nd.u.init),
+        e("text", {x:nd.x,y:nd.y+sz+12,fontSize:"9",fill:"#8BA3C7",textAnchor:"middle",fontFamily:"Fira Code"}, nd.u.name.split(" ")[0])
+      );
+    })
+  );
+}
+
+// ============================================================
+//  DASHBOARD
+// ============================================================
+function UserModal({u, linked}) {
+  const col = sc(u.score);
+  return e("div", null,
+    div(null, {style:{display:"flex",alignItems:"center",gap:13,padding:"14px 18px",background:u.rc+"11",borderRadius:12,marginBottom:18,border:"1px solid "+u.rc+"33"}},
+      div("av", {style:{width:46,height:46,borderRadius:13,fontSize:17,background:u.rc+"22",color:u.rc}}, u.init),
+      e("div", {style:{flex:1}},
+        e("div", {style:{fontSize:17,fontWeight:700}}, u.name),
+        e("div", {style:{fontSize:10,color:"var(--t3)",fontFamily:"var(--mono)",marginTop:2}}, u.id + " — " + u.platforms.join(", "))
+      ),
+      e("div", {style:{textAlign:"right"}},
+        e("div", {style:{fontSize:40,fontWeight:700,letterSpacing:"-2px",lineHeight:1,color:col}}, u.score),
+        e("div", {style:{fontSize:9,color:"var(--t3)",fontFamily:"var(--mono)"}}, u.risk + " RISK")
+      )
+    ),
+    e("div", {style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:15}},
+      ...[["Phone",u.phone,u.linked>1],["IP",u.ip,u.linked>1],["IMEI",u.imei,u.linked>1],["UPI",u.upi,u.score<40],["Bank",u.bank,u.linked>1],["Return Rate",u.returnRate+"%",u.returnRate>50]].map(([k,v,danger]) =>
+        e("div", {key:k,style:{padding:"9px 11px",background:"var(--bg3)",borderRadius:8}},
+          e("div", {style:{fontSize:9,fontFamily:"var(--mono)",color:"var(--t3)",marginBottom:3,textTransform:"uppercase",letterSpacing:".5px"}}, k),
+          e("div", {style:{fontSize:12,fontFamily:"var(--mono)",fontWeight:600,color:danger?"#FF2D55":"var(--t)",wordBreak:"break-all"}}, v)
+        )
+      )
+    ),
+    linked.length > 0 && e("div", null,
+      e("div", {style:{fontSize:10,fontFamily:"var(--mono)",fontWeight:700,color:"var(--t3)",marginBottom:8,textTransform:"uppercase",letterSpacing:1}}, "Linked Accounts (" + linked.length + ")"),
+      ...linked.map(l =>
+        e("div", {key:l.id,style:{display:"flex",alignItems:"center",gap:9,padding:"8px 11px",background:l.rc+"11",borderRadius:9,border:"1px solid "+l.rc+"22",marginBottom:6}},
+          div("av", {style:{background:l.rc+"22",color:l.rc}}, l.init),
+          e("div", {style:{flex:1}},
+            e("div", {style:{fontSize:13,fontWeight:600}}, l.name),
+            e("div", {style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--t3)",marginTop:1}}, l.phone + " — " + l.imei.slice(0,10) + "...")
+          ),
+          e("span", {className:"bdg "+sb(l.score)}, "UCTS " + l.score)
+        )
+      )
+    ),
+    e("div", {style:{display:"flex",gap:8,marginTop:16}},
+      u.score < 40 && e("button", {className:"btn btn-r",style:{flex:1},onClick:()=>{closeModal();toast("danger","Blacklisted",u.name+" + "+( u.linked-1)+" linked accounts blocked");}}, "Blacklist All"),
+      e("button", {className:"btn btn-gh",style:{flex:1},onClick:closeModal}, "Close")
+    )
+  );
+}
+
+function Dashboard() {
+  const [met, setMet] = useState({returns:1842,blocked:127,avg:68,saved:6.4,rings:34});
+  const [acts, setActs] = useState({});
+  const [feed, setFeed] = useState([
+    {c:"#FF2D55",t:"UUID d4f2a8c1 matched 4 banned accounts across Amazon+Flipkart",ts:"1m"},
+    {c:"#A855F7",t:"IP cluster 103.22.145.x: identity ring of 4 accounts detected",ts:"3m"},
+    {c:"#FF2D55",t:"Weight +67g on return IN#7834 (Galaxy S23 Ultra) — agent alerted",ts:"5m"},
+    {c:"#00E5A0",t:"Green channel: Priya K. UCTS 88 auto-approved — Rs.8,499 refund",ts:"7m"},
+    {c:"#FFB300",t:"New account pin 110044 — UPI linked to 2 blacklisted hashes",ts:"11m"},
+    {c:"#FF2D55",t:"OpenCV: S22 replica returned for S23 Ultra — counterfeit",ts:"14m"},
+    {c:"#A855F7",t:"COD blocked: pin 110044 fraud rate 34% (threshold 15%)",ts:"18m"},
+    {c:"#00D9FF",t:"Firebase sync: 1,842 UCTS records updated across 4 platforms",ts:"22m"},
+  ]);
+
+  useEffect(() => {
+    const iv = setInterval(() => setMet(m => ({...m, returns:m.returns+Math.floor(Math.random()*3), blocked:m.blocked+(Math.random()>.7?1:0)})), 3000);
+    const fiv = setInterval(() => {
+      const evts = [{c:"#FF2D55",t:"Fraud spike: 3 returns same IMEI in 30min",ts:"now"},{c:"#FFB300",t:"Weight mismatch: delta +43g — borderline",ts:"now"},{c:"#00E5A0",t:"UCTS improved: user cleared warehouse audit",ts:"now"},{c:"#A855F7",t:"Ring expanded: new device fingerprint match",ts:"now"}];
+      setFeed(p => [evts[Math.floor(Math.random()*evts.length)], ...p].slice(0, 10));
+    }, 9000);
+    return () => { clearInterval(iv); clearInterval(fiv); };
+  }, []);
+
+  function doAct(oid, act) {
+    setActs(p => ({...p, [oid]: act}));
+    const cfg = {approve:{t:"success",ti:"Return Approved",m:"Green channel — instant refund initiated"},block:{t:"danger",ti:"Return Blocked",m:"UCTS updated — COD suspended — Platform notified"},review:{t:"warn",ti:"Manual Review",m:"Warehouse audit queued — 24h SLA"}};
+    const c = cfg[act]; toast(c.t, c.ti, c.m);
+  }
+
+  const kpis = [
+    {l:"Returns Today",v:fmt(met.returns),d:"Up 12% vs yesterday",kc:"var(--t2)",ic:"📦"},
+    {l:"Fraud Blocked",v:met.blocked,d:"Up 23 last hour",kc:"#FF2D55",ic:"🚩"},
+    {l:"Avg UCTS Score",v:met.avg,d:"Down 4 pts this week",kc:"#FFB300",ic:"📊"},
+    {l:"Rs. Saved Today",v:"Rs."+met.saved.toFixed(1)+"L",d:"Auto-blocked value",kc:"#00E5A0",ic:"💰"},
+    {l:"Identity Rings",v:met.rings,d:"Up 4 new today",kc:"#A855F7",ic:"🔗"},
+  ];
+
+  return div("pg on", {id:"pg-dash"},
+    div("sb", null,
+      div("sg", null, "Operations"),
+      e("button", {className:"si on"}, e("span",{className:"sic"},"◈"), "Overview"),
+      e("button", {className:"si"}, e("span",{className:"sic"},"⊞"), "Return Queue", e("span",{className:"sib",style:{background:"#FF2D55",color:"#fff"}},"6")),
+      e("button", {className:"si"}, e("span",{className:"sic"},"⚖"), "Weight Checks", e("span",{className:"sib",style:{background:"#FFB300",color:"#000"}},"3")),
+      e("button", {className:"si"}, e("span",{className:"sic"},"◎"), "Vision Audit", e("span",{className:"sib",style:{background:"#FF2D55",color:"#fff"}},"7")),
+      div("sg", null, "Intelligence"),
+      e("button", {className:"si"}, e("span",{className:"sic"},"◉"), "Identity Graph"),
+      e("button", {className:"si"}, e("span",{className:"sic"},"▣"), "Geo Heatmap"),
+      e("button", {className:"si"}, e("span",{className:"sic"},"⧉"), "Device Registry"),
+      div("sg", null, "Platform"),
+      e("button", {className:"si"}, e("span",{className:"sic"},"⊗"), "COD Blocker"),
+      e("button", {className:"si"}, e("span",{className:"sic"},"⚙"), "API Sync", e("span",{className:"sib",style:{background:"#00E5A0",color:"#000"}},"OK"))
+    ),
+    div("scrl", null,
+      e("div", {className:"g5",style:{animation:"fadeUp .4s ease"}},
+        ...kpis.map((k, i) =>
+          e("div", {key:i,className:"kpi",style:{"--kc":k.kc}},
+            div("kpil", null, k.l),
+            div("kpiv", {style:{color:k.kc}}, k.v),
+            div("kpid", null, k.d),
+            div("kpiic", null, k.ic)
+          )
+        )
+      ),
+      e("div", {className:"g2"},
+        div("card", null,
+          div("ch", null, e("div",null,div("ct",null,"Fraud Detection — Live"),div("cs",null,"Updates every 800ms")),e("span",{className:"bdg br"},"LIVE")),
+          div("cb", {style:{padding:"10px 15px"}}, e(LiveChart))
+        ),
+        div("card", null,
+          div("ch", null, div("ct",null,"Fraud Type Distribution")),
+          div("cb", null, e(DonutChart))
+        )
+      ),
+      e("div", {className:"g32"},
+        div("card", {style:{overflow:"hidden"}},
+          div("ch", null,
+            e("div",null,div("ct",null,"Return Queue — Cross Platform"),div("cs",null,"Click row for full profile")),
+            e("span",{className:"bdg ba"},"6 PENDING")
+          ),
+          e("div", {style:{overflowX:"auto"}},
+            e("table", {className:"tbl"},
+              e("thead", null, e("tr", null, ...["Customer","Item","Platform","UCTS","Flags","Action"].map(c => e("th",{key:c},c)))),
+              e("tbody", null,
+                ...DB.queue.map(q => {
+                  const u = DB.users.find(x => x.id === q.uid);
+                  const s = u.score, col = sc(s), st = acts[q.orderId];
+                  let actionEl;
+                  if (st) {
+                    actionEl = e("span", {style:{fontSize:11,fontFamily:"var(--mono)",color:"var(--t3)"}}, st==="approve"?"Approved":st==="block"?"Blocked":"Review");
+                  } else if (s >= 70) {
+                    actionEl = e("button",{className:"btn btn-gh btn-sm",style:{fontSize:11},onClick:ev=>{ev.stopPropagation();doAct(q.orderId,"approve");}},"Auto Approve");
+                  } else if (s >= 40) {
+                    actionEl = e("button",{className:"btn btn-gh btn-sm",style:{fontSize:11,borderColor:"rgba(255,179,0,.4)",color:"#FFB300"},onClick:ev=>{ev.stopPropagation();doAct(q.orderId,"review");}},"Review");
+                  } else {
+                    actionEl = e("button",{className:"btn btn-r btn-sm",style:{fontSize:11},onClick:ev=>{ev.stopPropagation();doAct(q.orderId,"block");}},"Block");
+                  }
+                  return e("tr", {key:q.orderId,onClick:()=>openModal("Profile — "+u.name,e(UserModal,{u,linked:DB.getLinked(u)}))},
+                    e("td",null,div("uc",null,
+                      div("av",{style:{background:u.rc+"22",color:u.rc}},u.init),
+                      e("div",null,
+                        e("div",{style:{fontWeight:600,fontSize:13}},u.name),
+                        e("div",{style:{fontSize:10,color:"var(--t3)",fontFamily:"var(--mono)"}},q.orderId)
+                      )
+                    )),
+                    e("td",null,e("div",{style:{fontSize:12,color:"var(--t2)"}},q.item),e("div",{style:{fontSize:10,color:"var(--t3)",fontFamily:"var(--mono)"}},q.value)),
+                    e("td",null,e("span",{className:"bdg "+(s<40?"br":s<70?"ba":"bc")},q.platform)),
+                    e("td",null,div("mb",null,div("mbt",null,div("mbf",{style:{width:s+"%",background:col}})),e("span",{className:"mbv",style:{color:col}},s))),
+                    e("td",null,e("div",{style:{display:"flex",gap:3,flexWrap:"wrap"}},
+                      u.codBlocked && e("span",{className:"bdg br"},"COD"),
+                      u.linked > 1 && e("span",{className:"bdg bp"},u.linked+"x"),
+                      u.weightMismatches > 0 && e("span",{className:"bdg ba"},"WGT")
+                    )),
+                    e("td",{onClick:ev=>ev.stopPropagation()}, actionEl)
+                  );
+                })
+              )
+            )
+          )
+        ),
+        div("card", null,
+          div("ch", null, div("ct",null,"Intelligence Feed"), e("span",{className:"bdg bc"},"LIVE")),
+          div("cb", {style:{padding:"8px 13px",maxHeight:265,overflowY:"auto"}},
+            ...feed.map((f, i) =>
+              div("fi", {key:i},
+                div("fd", {style:{background:f.c}}),
+                e("div",null,div("ft",null,f.t),div("fts",null,f.ts+" ago"))
+              )
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+// ============================================================
+//  IDENTITY ENGINE
+// ============================================================
+function IdentityEngine() {
+  const [q, setQ] = useState("+91 98765 43210");
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [linked, setLinked] = useState([]);
+  const [tried, setTried] = useState(false);
+
+  async function search(query) {
+    const val = query !== undefined ? query : q;
+    if (!val.trim()) return;
+    setLoading(true); setUser(null); setLinked([]); setTried(true);
+    await delay(700 + Math.random() * 400);
+    const u = DB.lookup(val);
+    setLoading(false);
+    if (!u) { toast("warn", "No Match", '"'+val+'" not found. Try: +91 98765 43210'); return; }
+    setUser(u); setLinked(DB.getLinked(u));
+    toast(u.score<40?"danger":u.score<70?"warn":"success",
+      (u.score<40?"High Risk: ":u.score<70?"Medium Risk: ":"Clean: ") + u.name,
+      u.score<40?"UCTS "+u.score+" — "+u.linked+" linked accounts — "+u.incidents+" incidents":"UCTS "+u.score+" — No significant fraud signals"
+    );
+  }
+
+  const signals = user ? [
+    {ic:"📱",l:"Phone",v:user.phone,cls:user.linked>1?"dd":"ss",st:user.linked>1?"On "+user.linked+" accounts":"Single account only"},
+    {ic:"🌐",l:"IP Address",v:user.ip,cls:user.linked>1?"dd":"ss",st:user.linked>1?user.linked+" accounts share this IP":"Clean IP address"},
+    {ic:"💻",l:"IMEI/UUID",v:user.imei,cls:user.score<40?"dd":"ss",st:user.score<40?"IMEI in fraud registry":"Not flagged"},
+    {ic:"💳",l:"UPI/Payment",v:user.upi,cls:user.score<40?"dd":"ss",st:user.score<40?"UPI linked to fraud hashes":"Clean payment method"},
+    {ic:"🏠",l:"Address",v:user.city+" "+user.pin,cls:user.codBlocked?"dd":"ss",st:user.codBlocked?"COD blocked zone — "+user.pin:"Normal delivery area"},
+    {ic:"🏦",l:"Bank",v:user.bank,cls:user.score<40?"dd":"ss",st:user.score<40?"Bank in risk registry":"No alerts"},
+  ] : [];
+
+  return div("pg on", {id:"pg-ide",style:{flexDirection:"column"}},
+    e("div", {style:{padding:18,borderBottom:"1px solid var(--b)",background:"var(--bg1)",flexShrink:0}},
+      e("div", {style:{fontSize:18,fontWeight:700,letterSpacing:"-.5px",marginBottom:3}}, "Identity Intelligence Engine"),
+      e("div", {style:{fontSize:12,color:"var(--t2)",marginBottom:13}}, "Track any person across phone — IP — IMEI — UPI — address — bank, even when they change accounts"),
+      e("div", {style:{display:"flex",gap:9}},
+        e("input", {className:"inp",value:q,onChange:ev=>setQ(ev.target.value),onKeyDown:ev=>ev.key==="Enter"&&search(),placeholder:"Search: phone / IP / IMEI / UPI / email / name..."}),
+        e("button", {className:"btn btn-c",onClick:()=>search(),disabled:loading}, loading && e("span",{className:"spn"}), loading ? "Searching..." : "Search"),
+        e("button", {className:"btn btn-gh",onClick:()=>{setQ("+91 98765 43210");search("+91 98765 43210");}}, "High Risk"),
+        e("button", {className:"btn btn-gh",onClick:()=>{setQ("+91 77654 32108");search("+91 77654 32108");}}, "Clean User")
+      )
+    ),
+    e("div", {style:{flex:1,overflow:"hidden",display:"flex"}},
+      e("div", {style:{flex:1,overflowY:"auto",padding:18,display:"flex",flexDirection:"column",gap:14}},
+        loading && e("div", {style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}},
+          ...[0,1,2,3,4,5].map(i => div("scrd",{key:i},div("skel",{style:{height:12,width:"50%",marginBottom:8}}),div("skel",{style:{height:16,marginBottom:6}}),div("skel",{style:{height:10,width:"70%"}})))
+        ),
+        user && e(Fragment, null,
+          e("div", {style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,animation:"fadeUp .3s ease"}},
+            ...signals.map((s, i) =>
+              e("div", {key:i,className:"scrd "+s.cls},
+                e("div",{style:{fontSize:19,marginBottom:5}},s.ic),
+                div("sl",null,s.l),
+                div("sv",null,s.v),
+                e("div",{className:"ss2",style:{color:s.cls==="dd"?"#FF2D55":"#00E5A0"}},s.st)
+              )
+            )
+          ),
+          linked.length > 0 && div("card", {style:{animation:"fadeUp .3s ease .08s both"}},
+            div("ch", null,
+              e("div",null,div("ct",null,"Identity Ring Visualization"),div("cs",null,"Shared signals on edges — click node to pivot")),
+              e("span",{className:"bdg br"},linked.length+" LINKED")
+            ),
+            div("igw", null, e(IdGraph, {center:user,linked}))
+          ),
+          linked.length > 0 && div("card", {style:{animation:"fadeUp .3s ease .12s both"}},
+            div("ch", null, e("div",null,div("ct",null,"Linked Account Registry"),div("cs",null,"Accounts sharing 1+ signals"))),
+            div("cb", null,
+              ...linked.map(l =>
+                div("li", {key:l.id,onClick:()=>{setQ(l.phone);search(l.phone);}},
+                  div("av", {style:{width:33,height:33,borderRadius:9,background:l.rc+"22",color:l.rc}}, l.init),
+                  e("div",{style:{flex:1}},
+                    e("div",{style:{fontSize:13,fontWeight:600}},l.name),
+                    e("div",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--t3)",marginTop:2}},l.phone+" — "+l.imei.slice(0,12)+"...")
+                  ),
+                  e("div",{style:{textAlign:"right"}},
+                    e("div",{style:{fontSize:20,fontWeight:700,color:sc(l.score),letterSpacing:"-1px",lineHeight:1}},l.score),
+                    e("div",{style:{fontSize:9,color:"var(--t3)",fontFamily:"var(--mono)",marginTop:2}},l.risk)
+                  )
+                )
+              )
+            )
+          ),
+          user.timeline && user.timeline.length > 0 && div("card", {style:{animation:"fadeUp .3s ease .16s both"}},
+            div("ch", null, div("ct", null, "Fraud Event Timeline")),
+            div("cb", null,
+              ...user.timeline.map((ev, i) =>
+                div("tl", {key:i},
+                  div("tld", {style:{background:ev.c==="r"?"#FF2D55":ev.c==="a"?"#FFB300":"#00E5A0"}}),
+                  e("div",null,div("tlt",null,ev.e),div("tls",null,ev.t))
+                )
+              )
+            )
+          )
+        ),
+        tried && !user && !loading && e("div", {style:{textAlign:"center",padding:60,color:"var(--t3)"}},
+          e("div",{style:{fontSize:38,marginBottom:12}},"🔍"),
+          e("div",{style:{fontSize:16,fontWeight:600,marginBottom:6}},"No match found"),
+          e("div",{style:{fontSize:12}},"Try: +91 98765 43210 or 103.22.145.88 or d4f2a8c1")
+        )
+      ),
+      user && div("pp", null,
+        div("pph", null,
+          e("div",{style:{display:"flex",alignItems:"flex-start",justifyContent:"space-between"}},
+            div("pav", {style:{background:user.rc+"22",color:user.rc}}, user.init),
+            e("span",{className:"bdg "+sb(user.score)},user.risk)
+          ),
+          div("pn", null, user.name),
+          div("pid", null, user.id + " — " + user.email),
+          e("div",{style:{display:"flex",alignItems:"baseline",gap:8,marginTop:11}},
+            div("psc", {style:{color:sc(user.score)}}, user.score),
+            e("div",null,
+              e("div",{style:{fontSize:13,fontWeight:700,color:sc(user.score)}},user.risk),
+              e("div",{style:{fontSize:9,color:"var(--t3)",fontFamily:"var(--mono)"}},"UCTS / 100")
+            )
+          ),
+          e("div",{style:{marginTop:11,display:"flex",flexWrap:"wrap",gap:3}},
+            ...user.flags.map(f => e("span",{key:f,style:{fontSize:8,fontFamily:"var(--mono)",fontWeight:700,padding:"2px 6px",borderRadius:4,background:"rgba(255,45,85,.15)",color:"#FF2D55"}},f))
+          )
+        ),
+        e("div",{style:{flex:1,overflowY:"auto"}},
+          ...[["LINKED ACCS",user.linked+" accounts",user.linked>1],["INCIDENTS",user.incidents+" confirmed",user.incidents>0],["WEIGHT MISMATCHES",user.weightMismatches+" events",user.weightMismatches>0],["RETURN RATE",user.returnRate+"%",user.returnRate>50],["COD",user.codBlocked?"BLOCKED":"Active",user.codBlocked],["IMEI",user.imei,user.linked>1],["UPI",user.upi,user.score<40]].map(([k,v,danger]) =>
+            div("prw", {key:k},
+              e("span",{className:"pk"},k),
+              e("span",{className:"pv",style:{color:danger?"#FF2D55":"var(--t2)"}},v)
+            )
+          ),
+          e("div",{style:{padding:13,display:"flex",flexDirection:"column",gap:6,borderTop:"1px solid var(--b)"}},
+            e("div",{style:{fontSize:9,fontFamily:"var(--mono)",fontWeight:700,color:"var(--t3)",textTransform:"uppercase",letterSpacing:1,marginBottom:4}},"Actions"),
+            user.score < 40 && e("button",{className:"btn btn-r",style:{width:"100%",justifyContent:"center",fontSize:12},onClick:()=>toast("danger","Blacklisted",user.name+" + linked accounts blocked")},"Blacklist All Accounts"),
+            user.score < 40 && e("button",{className:"btn btn-gh btn-sm",style:{width:"100%",justifyContent:"center"},onClick:()=>toast("warn","COD Blocked","Pincode "+user.pin+" cluster suspended")},"Block COD — "+user.pin),
+            e("button",{className:"btn btn-gh btn-sm",style:{width:"100%",justifyContent:"center"},onClick:()=>toast("info","Added","Case added to Fraud Ledger")},"Add to Fraud Ledger")
+          )
+        )
+      )
+    )
+  );
+}
+
+// ============================================================
+//  AGENT PAGE
+// ============================================================
+function AgentPage() {
+  const [st, setSt] = useState({qr:null,wt:null,ph:null,id:null});
+  const [wt, setWt] = useState(0);
+  const [score, setScore] = useState(22);
+  const [done, setDone] = useState(false);
+  const [scanSt, setScanSt] = useState("READY TO SCAN");
+  const [scanFail, setScanFail] = useState(false);
+  const allDone = Object.values(st).every(v => v !== null);
+
+  function doQR() {
+    if (st.qr !== null) return;
+    setScanSt("SCANNING...");
+    setTimeout(() => {
+      setScanSt("TAMPER DETECTED — Seal broken");
+      setScanFail(true);
+      setSt(p => ({...p, qr:"fail"}));
+      toast("danger", "QR Seal Tampered", "SHA-256 hash mismatch — Package opened before pickup");
+    }, 1800);
+  }
+  function doWt() {
+    if (st.qr === null) { toast("warn","Scan QR First","QR check required before weighing"); return; }
+    if (st.wt !== null) return;
+    let w = 182; const target = 249;
+    const iv = setInterval(() => {
+      w = Math.min(w + Math.floor(Math.random()*8)+3, target);
+      setWt(w);
+      if (w >= target) { clearInterval(iv); setSt(p => ({...p, wt:"fail"})); toast("danger","Weight Mismatch","+"+(target-182)+"g vs dispatch — Counterfeit suspected"); }
+    }, 80);
+  }
+  function doPh() {
+    if (st.wt === null) { toast("warn","Weigh First","Weight check required"); return; }
+    if (st.ph !== null) return;
+    setTimeout(() => { setSt(p => ({...p, ph:"fail"})); toast("danger","Counterfeit Detected","OpenCV: S22 replica vs S23 Ultra — 94.2% confidence"); }, 1200);
+  }
+  function doId() {
+    if (st.ph === null) { toast("warn","Photo First","Photo required before ID"); return; }
+    if (st.id !== null) return;
+    setTimeout(() => { setSt(p => ({...p, id:"pass"})); toast("success","ID Verified","Aadhaar face match: 94.2%"); }, 1000);
+  }
+  function submit() {
+    setDone(true); setScore(8);
+    toast("danger","Return Rejected","IN#7834 rejected — UCTS 22 to 8 — Account blacklisted");
+    setTimeout(() => toast("info","Ledger Updated","Case auto-added — COD pin 110044 suspended"), 1500);
+  }
+
+  const checks = [
+    {ic:"⚖",name:"Weigh Package",sub:"BT Scale — Dispatch: 182g",fn:doWt,s:st.wt,lb:st.wt===null?"TAP":st.wt==="fail"?"MISMATCH":"OK"},
+    {ic:"📷",name:"Photo Product",sub:"OpenCV visual check",fn:doPh,s:st.ph,lb:st.ph===null?"TAP":st.ph==="fail"?"COUNTERFEIT":"OK"},
+    {ic:"🪪",name:"ID Verification",sub:"Aadhaar face match",fn:doId,s:st.id,lb:st.id===null?"TAP":st.id==="pass"?"VERIFIED":"FAIL"},
+  ];
+
+  const infoCards = [
+    {t:"How this works",b:e("p",{style:{fontSize:12,lineHeight:1.8,color:"var(--t2)"}},"Agent sees ",e("strong",{style:{color:"var(--t)"}},"UCTS score")," before accepting. Score below 40 triggers ",e("strong",{style:{color:"#FF2D55"}},"mandatory 4-step audit"),". Tap each step in the phone — they run in sequence.")},
+    {t:"Decision matrix",b:e("div",{style:{display:"flex",flexDirection:"column",gap:6,fontSize:11.5}},
+      ...[["All checks pass","INSTANT REFUND","#00E5A0"],["Weight delta 15-30g","WAREHOUSE AUDIT","#FFB300"],["Seal broken or delta 30g+","REJECT + FLAG","#FF2D55"],["UCTS below 20 or 3+ linked","COD FOREVER BLOCKED","#A855F7"]].map(([c,r,col]) =>
+        e("div",{key:c,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 11px",background:col+"11",borderRadius:8,border:"1px solid "+col+"33"}},
+          e("span",{style:{color:"var(--t2)"}},c),
+          e("span",{style:{fontFamily:"var(--mono)",color:col,fontWeight:700}},r)
+        )
+      )
+    )},
+    {t:"System flow",b:e("div",{style:{display:"flex",flexDirection:"column",gap:6}},
+      ...[[1,"App queries UCTS API — trust score and flags","#00D9FF"],[2,"QR: SHA-256 seal integrity check","#00D9FF"],[3,"BT Scale: return weight vs dispatch","#FFB300"],[4,"Photo — OpenCV counterfeit detection","#FFB300"],[5,"All signals — Firebase — UCTS updated in 1 second","#00E5A0"]].map(([n,t2,col]) =>
+        e("div",{key:n,style:{display:"flex",gap:9,alignItems:"flex-start"}},
+          e("span",{style:{width:21,height:21,background:col+"22",color:col,borderRadius:5,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"var(--mono)",fontSize:10,fontWeight:700,flexShrink:0}},n),
+          e("span",{style:{fontSize:11.5,color:"var(--t2)",lineHeight:1.5}},t2)
+        )
+      )
+    )},
+  ];
+
+  return div("pg on agw", {id:"pg-agent"},
+    div("phout", null,
+      div("phin", null,
+        div("phisl"),
+        div("phtop", null, e("span",null,"9:41"), e("span",null,"TrustChain"), e("span",null,"5G")),
+        div("phsc", null,
+          div("ah", null, div("as2",null,"PICKUP VERIFICATION"), div("ao",null,"IN-7834"), div("ai",null,"Samsung Galaxy S23 Ultra — Rs.1,24,999")),
+          div("ro", null,
+            div("rw", null,
+              e(Ring, {score}),
+              div("rc", null, div("rn",{style:{color:sc(score),transition:"all .5s"}},score), div("rl",null,"UCTS"))
+            ),
+            div("rt", {style:{color:done?"#FF2D55":sc(score)}}, done?"BLACKLISTED":"HIGH RISK CUSTOMER"),
+            div("rf", null,
+              ...([["4 LINKED ACCOUNTS","#FF2D55"],["IP FLAGGED","#FF2D55"],["8 PREV RETURNS","#FFB300"],["IMEI IN REGISTRY","#FF2D55"]]).map(([t2,col]) =>
+                e("span",{key:t2,className:"rfl",style:{background:col+"22",color:col}},t2)
+              )
+            )
+          ),
+          e("div",{style:{fontSize:9,fontFamily:"var(--mono)",color:"rgba(255,255,255,.27)",margin:"10px 0 5px",letterSpacing:"2px"}},"STEP 1 — QR SEAL"),
+          div("sb3", {style:{borderColor:scanFail?"rgba(255,45,85,.38)":undefined,background:scanFail?"rgba(255,45,85,.04)":undefined}},
+            div("sbl"),
+            div("sbic", null, "▦"),
+            div("sbh", null, "SHA-256: a3f9c2e8...4d41 — Seal ID: 0x7FB3A2"),
+            div("sbs", {style:{color:scanFail?"#FF2D55":"#00D9FF"}}, scanSt)
+          ),
+          e("button", {onClick:doQR,disabled:st.qr!==null,style:{width:"100%",padding:"10px",background:"#0F1520",border:"1px solid "+(st.qr==="fail"?"rgba(255,45,85,.3)":"rgba(255,255,255,.09)"),borderRadius:10,color:st.qr==="fail"?"#FF2D55":"#fff",fontFamily:"var(--sans)",fontSize:12,fontWeight:600,cursor:st.qr!==null?"default":"pointer",marginBottom:8,transition:"all .2s"}},
+            st.qr === null ? "Scan QR Seal" : st.qr === "fail" ? "SEAL TAMPERED" : "Seal OK"
+          ),
+          e("div",{style:{fontSize:9,fontFamily:"var(--mono)",color:"rgba(255,255,255,.27)",margin:"4px 0 6px",letterSpacing:"2px"}},"VERIFICATION STEPS"),
+          ...checks.map(ck => {
+            const state = ck.name === "ID Verification" ? (ck.s === "pass" ? "done" : "") : (ck.s === "fail" ? "fail" : ck.s !== null ? "done" : "");
+            return div("cli "+state, {key:ck.name,onClick:ck.fn},
+              div("clb", null, state==="done"?"✓":state==="fail"?"✕":ck.ic),
+              e("div",{style:{flex:1}}, div("clname",null,ck.name), div("clsub",null,ck.sub)),
+              div("clst", {style:{color:state==="done"?"#00E5A0":state==="fail"?"#FF2D55":"rgba(255,255,255,.25)"}}, ck.lb)
+            );
+          }),
+          st.wt !== null && div("wtw", null,
+            e("div",{style:{fontSize:8,fontFamily:"var(--mono)",color:"rgba(255,255,255,.27)",letterSpacing:"1px",marginBottom:8}},"BT SCALE — LIVE"),
+            div("wtr", null,
+              div("wtb", null, div("wtbl",null,"DISPATCH"), div("wtn",{style:{color:"#00E5A0"}},"182",e("span",{style:{fontSize:10,color:"rgba(255,255,255,.28)"}},"g"))),
+              div("wts", null, "="),
+              div("wtb", null, div("wtbl",null,"RETURN"), div("wtn",{style:{color:"#FF2D55"}}, wt||"...", wt ? e("span",{style:{fontSize:10,color:"rgba(255,255,255,.28)"}},"g") : null))
+            ),
+            div("wtdb", null, div("wtdf", {style:{width:wt>=249?"90%":"0%"}})),
+            wt >= 249 && div("wtm", null, "Delta: +"+(wt-182)+"g — Threshold 15g — EXCEEDED 4.5x")
+          ),
+          st.ph === "fail" && e("div",{style:{background:"rgba(255,45,85,.06)",border:"1px solid rgba(255,45,85,.2)",borderRadius:11,padding:"10px",marginBottom:8,fontSize:10,fontFamily:"var(--mono)"}},
+            e("div",{style:{color:"rgba(255,255,255,.38)",marginBottom:4}},"OPENCV ANALYSIS"),
+            e("div",{style:{color:"#FF2D55",fontWeight:600}},"COUNTERFEIT DETECTED — 94.2% confidence"),
+            e("div",{style:{color:"rgba(255,255,255,.32)",marginTop:3}},"Expected: S23 Ultra — Got: S22 replica (local copy)")
+          ),
+          allDone && div("verd", {style:{background:"rgba(255,45,85,.08)",border:"1px solid rgba(255,45,85,.2)"}},
+            e("div",{style:{fontSize:19,marginBottom:3}},"⛔"),
+            e("div",{style:{fontSize:13,fontWeight:800,color:"#fff",marginBottom:3}},"REJECT PICKUP"),
+            e("div",{style:{fontSize:9,fontFamily:"var(--mono)",color:"rgba(255,255,255,.38)"}},"QR tampered — Weight +67g — Counterfeit — UCTS updating to 8")
+          ),
+          e("button",{className:"sbtn "+(done?"dn":allDone?"rdy":""),disabled:!allDone||done,onClick:submit},
+            done ? "Report Submitted — UCTS Updated" : "Reject Return & Flag Platform"
+          )
+        )
+      )
+    ),
+    div("ainf", null,
+      ...infoCards.map(ic =>
+        div("card", {key:ic.t},
+          div("ch", null, div("ct",null,ic.t)),
+          div("cb", null, ic.b)
+        )
+      )
+    )
+  );
+}
+
+// ============================================================
+//  FRAUD LEDGER
+// ============================================================
+function FraudLedger() {
+  const [fp, setFp] = useState("");
+  const [ft, setFt] = useState("");
+  const [data, setData] = useState([...DB.ledger]);
+
+  const filtered = data.filter(l => (!fp || l.platforms.includes(fp)) && (!ft || l.type.includes(ft)));
+
+  function escalate(ev, item) {
+    ev.stopPropagation();
+    setData(p => p.map(x => x.hash === item.hash ? {...x, status:"BLACKLIST", cod:"BLOCKED"} : x));
+    toast("danger", "Escalated", "Case upgraded to BLACKLIST — Platforms notified");
+  }
+
+  const gv = [9,3,8,2,7,1,9,4,1,6,2,9,5,8,1,7,3,9,2,8,1,7,4,9,3,8,5,2,9,1,9,2,6,3,9,1,8,4,7,3,5,9,1,7,4,9,2,8,3,6];
+
+  return div("pg on", {id:"pg-ledger",style:{flexDirection:"column"}},
+    div("lbar", null,
+      e("div",{style:{fontSize:16,fontWeight:700,letterSpacing:"-.4px"}},"Fraud Ledger"),
+      e("div",{style:{fontSize:12,color:"var(--t2)"}},"SHA-256 anonymized — ",e("strong",{style:{color:"#FF2D55"}},"14 active")),
+      e("div",{style:{marginLeft:"auto",display:"flex",gap:8}},
+        e("select",{className:"sel",value:fp,onChange:ev=>setFp(ev.target.value)},
+          e("option",{value:""},"All Platforms"),
+          ...["Amazon","Flipkart","Meesho","Myntra"].map(p => e("option",{key:p,value:p},p))
+        ),
+        e("select",{className:"sel",value:ft,onChange:ev=>setFt(ev.target.value)},
+          e("option",{value:""},"All Types"),
+          ...["Weight","Counterfeit","Identity","Account"].map(t2 => e("option",{key:t2,value:t2},t2))
+        ),
+        e("button",{className:"btn btn-c btn-sm",onClick:()=>openModal("Add Entry",e(AddForm))},"+ Add Entry")
+      )
+    ),
+    div("lmain", null,
+      div("card", {style:{overflow:"hidden"}},
+        e("div",{style:{overflowX:"auto"}},
+          e("table",{className:"tbl"},
+            e("thead",null,e("tr",null,...["Hash","Type","Platforms","Linked","Incidents","UCTS","Status","Rs. Blocked","COD","Actions"].map(c=>e("th",{key:c},c)))),
+            e("tbody",null,
+              ...filtered.map((l, i) => {
+                const col = sc(l.score);
+                return e("tr",{key:i,onClick:()=>openModal("Case: "+l.hash,e(LedgerModal,{l}))},
+                  e("td",{style:{fontFamily:"var(--mono)",fontSize:11,color:"var(--t3)"}},l.hash),
+                  e("td",null,e("span",{className:"bdg "+(l.type.includes("Weight")||l.type.includes("Identity")?"br":"ba")},l.type)),
+                  e("td",null,e("div",{style:{display:"flex",gap:3}},...l.platforms.map(p=>e("span",{key:p,className:"bdg bx"},p)))),
+                  e("td",{style:{fontFamily:"var(--mono)",color:"#A855F7",fontWeight:700}},l.linked),
+                  e("td",{style:{fontFamily:"var(--mono)",color:l.incidents>8?"#FF2D55":"#FFB300",fontWeight:700}},l.incidents+"x"),
+                  e("td",{style:{fontFamily:"var(--mono)",fontWeight:700,color:col}},l.score),
+                  e("td",null,e("span",{className:"bdg "+(l.status==="BLACKLIST"?"br":l.status==="RESTRICTED"?"ba":"bc")},l.status)),
+                  e("td",{style:{fontFamily:"var(--mono)",fontWeight:600,color:"#00E5A0"}},"Rs."+fmt(l.blocked)),
+                  e("td",null,e("span",{className:"bdg "+(l.cod==="BLOCKED"?"br":l.cod==="WATCH"?"ba":"bg")},l.cod)),
+                  e("td",{onClick:ev=>ev.stopPropagation()},
+                    e("div",{style:{display:"flex",gap:4}},
+                      e("button",{className:"btn btn-gh btn-sm",style:{fontSize:10},onClick:()=>openModal("Case: "+l.hash,e(LedgerModal,{l}))},"View"),
+                      l.status !== "BLACKLIST" && e("button",{className:"btn btn-r btn-sm",style:{fontSize:10},onClick:ev=>escalate(ev,l)},"Escalate")
+                    )
+                  )
+                );
+              })
+            )
+          )
+        )
+      ),
+      e("div",{className:"g2"},
+        div("card",null,
+          div("ch",null,e("div",null,div("ct",null,"COD Block Zones"),div("cs",null,"Auto-blocked when fraud rate exceeds 15%"))),
+          div("cb",{style:{display:"flex",flexDirection:"column",gap:7,fontSize:12}},
+            ...[["110044-110059","Delhi NCR","34%","#FF2D55","COD BLOCKED","br"],["400063-400072","Mumbai West","28%","#FF2D55","COD BLOCKED","br"],["560027-560040","Bangalore","18%","#FFB300","WATCH","ba"],["600001-600020","Chennai","6%","#00E5A0","CLEAR","bg"]].map(([p2,c2,r2,col2,s2,b2]) =>
+              e("div",{key:p2,style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"9px 11px",background:col2+"11",borderRadius:9,border:"1px solid "+col2+"22"}},
+                e("div",null,e("strong",null,p2)," — ",c2," — ",e("strong",{style:{color:col2}},r2)),
+                e("span",{className:"bdg "+b2},s2)
+              )
+            )
+          )
+        ),
+        div("card",null,
+          div("ch",null,e("div",null,div("ct",null,"Geo Risk Heatmap"),div("cs",null,"Click for zone details"))),
+          div("cb",null,
+            div("geo",null,...gv.map((v,i)=>div("gec",{key:i,style:{background:v>=7?"rgba(255,45,85,"+(v/10)+")":v>=4?"rgba(255,179,0,"+(v/12)+")":"rgba(0,229,160,"+(v/14)+")"},title:"Risk: "+v+"/10",onClick:()=>toast(v>=7?"danger":v>=4?"warn":"success","Zone Risk: "+v+"/10",v>=7?"High fraud — COD suspended":v>=4?"Elevated — monitoring":"Low risk")}))),
+            e("div",{style:{display:"flex",gap:13,marginTop:10,fontSize:10,fontFamily:"var(--mono)"}},
+              e("span",{style:{color:"#00E5A0"}},"Low"),
+              e("span",{style:{color:"#FFB300"}},"Medium"),
+              e("span",{style:{color:"#FF2D55"}},"High")
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+function LedgerModal({l}) {
+  const col = sc(l.score);
+  return e("div",null,
+    e("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:9,marginBottom:16}},
+      ...[["Fraud Type",l.type],["UCTS Score",""+l.score],["Linked",""+l.linked],["Incidents",l.incidents+"x"],["Rs. Blocked","Rs."+fmt(l.blocked)],["COD",l.cod]].map(([k,v]) =>
+        e("div",{key:k,style:{padding:"9px 11px",background:"var(--bg3)",borderRadius:8}},
+          e("div",{style:{fontSize:9,fontFamily:"var(--mono)",color:"var(--t3)",marginBottom:4,textTransform:"uppercase",letterSpacing:".5px"}},k),
+          e("div",{style:{fontSize:14,fontWeight:700,color:k==="UCTS Score"?col:"var(--t)"}},v)
+        )
+      )
+    ),
+    e("div",{style:{display:"flex",gap:8}},
+      e("button",{className:"btn btn-r",style:{flex:1},onClick:()=>{closeModal();toast("danger","Blacklisted","Case escalated — Platforms notified");}},"Blacklist"),
+      e("button",{className:"btn btn-gh",style:{flex:1},onClick:closeModal},"Close")
+    )
+  );
+}
+
+function AddForm() {
+  return e("div",{style:{display:"flex",flexDirection:"column",gap:13}},
+    ...[["Signal (Phone/IP/UUID)","Enter signal..."],["Affected Platforms","Amazon, Flipkart..."]].map(([l,p]) =>
+      e("div",{key:l},
+        e("div",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--t3)",marginBottom:5,textTransform:"uppercase",letterSpacing:".5px"}},l),
+        e("input",{className:"inp",placeholder:p})
+      )
+    ),
+    e("div",null,
+      e("div",{style:{fontSize:10,fontFamily:"var(--mono)",color:"var(--t3)",marginBottom:5,textTransform:"uppercase",letterSpacing:".5px"}},"Fraud Type"),
+      e("select",{className:"inp",style:{cursor:"pointer"}},
+        ...["Weight Fraud","Counterfeit Swap","Identity Launder","Account Farm","Payment Fraud"].map(o => e("option",{key:o},o))
+      )
+    ),
+    e("div",{style:{display:"flex",gap:8,marginTop:4}},
+      e("button",{className:"btn btn-c",style:{flex:1},onClick:()=>{closeModal();toast("success","Entry Added","New case created — UCTS updated");}},"Add to Ledger"),
+      e("button",{className:"btn btn-gh",style:{flex:1},onClick:closeModal},"Cancel")
+    )
+  );
+}
+
+// ============================================================
+//  ROOT
+// ============================================================
+function App() {
+  const [pg, setPg] = useState("dashboard");
+  const pages = {dashboard:e(Dashboard),identity:e(IdentityEngine),agent:e(AgentPage),ledger:e(FraudLedger)};
+
+  useEffect(() => {
+    setTimeout(() => toast("danger","High Risk Alert","USR001: UCTS 22 — 4 linked accounts — IMEI blacklisted"), 3000);
+    setTimeout(() => toast("info","Live Update","1,842 UCTS records synced across 4 platforms"), 8000);
+  }, []);
+
+  return div("app", null,
+    div("bar", null,
+      div("logo", null,
+        div("logo-m", null, "TC"),
+        e("div",{className:"logo-n"},e("span",null,"Trust"),"Chain")
+      ),
+      div("tabs", null,
+        ...[["dashboard","Dashboard",null],["identity","Identity Engine","4"],["agent","Delivery Agent",null],["ledger","Fraud Ledger","14"]].map(([id,label,badge]) =>
+          e("button",{key:id,className:"tab"+(pg===id?" on":""),onClick:()=>setPg(id)},
+            label,
+            badge && e("span",{className:"tabn"},badge)
+          )
+        )
+      ),
+      div("bar-r", null,
+        div("livew", null, div("lived"), "LIVE"),
+        e(Clock),
+        div("uav", null, "AD")
+      )
+    ),
+    div("bdy", null, pages[pg]),
+    e(Toasts),
+    e(ModalRoot)
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(e(App));
+</script>
+</body>
+</html>
